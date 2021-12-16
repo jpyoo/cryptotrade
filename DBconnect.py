@@ -1,39 +1,21 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[17]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-# In[1]:
-
-
 import pymysql
 
-
-# In[324]:
-
-
 class myDB():
-        
     def __init__(self, sid = '', spw = ''):
         self.id = sid
         self.pw = spw
         self.host = 'database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com'
-        self.db = 'main'
+        self.cdb = 'main'
         self.connect = None
         self.cursor = None
         
     def dbconnect(self):
-        dbcon = pymysql.connect(
-        host = self.host,
-        user = self.id,
-        password = self.pw,
-        db = self.db,
-        autocommit = True)
-        self.connect = dbcon
-        self.cursor = dbcon.cursor()
+        self.connect = pymysql.connect(host = self.host,
+                                user = self.id,
+                                password = self.pw,
+                                database = self.cdb,
+                                autocommit = True)        
+        self.cursor = self.connect.cursor()
     
     def reconnect(self):
         try:
