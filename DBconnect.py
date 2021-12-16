@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[17]:
 
 
-# database-1
-# admin
-# 1234qwer
-# database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com
-# 3306
-
-
+#!/usr/bin/env python
+# coding: utf-8
 # In[1]:
 
 
@@ -21,24 +16,21 @@ import pymysql
 
 
 class myDB():
-      
-    def __init__(self):
-	self.load_db(db.key)
-        dbcon = pymysql.connect(
-        host = 'database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com',
-        user = self.id,
-        password = self.pw,
-        db = 'main',
-        autocommit = True)
-        self.connect = dbcon
-        self.cursor = dbcon.cursor()
-    
+        
+    def __init__(self, sid = '', spw = ''):
+        self.id = sid
+        self.pw = spw
+        self.host = 'database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com'
+        self.db = 'main'
+        self.connect = None
+        self.cursor = None
+        
     def dbconnect(self):
         dbcon = pymysql.connect(
-        host = 'database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com',
+        host = self.host,
         user = self.id,
         password = self.pw,
-        db = 'main',
+        db = self.db,
         autocommit = True)
         self.connect = dbcon
         self.cursor = dbcon.cursor()
@@ -46,14 +38,29 @@ class myDB():
     def reconnect(self):
         try:
             self.connect.close()
-            self.connect = pymysql.connect(host = 'database-1.cjqswaciegfj.us-east-2.rds.amazonaws.com',user = self.id,password = self.pw, db = 'main')
         except:
             pass
         try:
             self.cursor.close()
-            self.cursor = self.connect.cursor()
         except:
             pass
+        self.dbconnect()
+        
+    def drop(self):
+        self.connect.close()
+        self.cursor.close()
+        
+    def load_key(self, path):
+        with open(path, 'r') as f:
+            self.key = f.readline().strip()
+            self.secret = f.readline().strip()
+        return
+
+    def load_db(self, path):
+        with open(path, 'r') as f:
+            self.id = f.readline().strip()
+            self.pw = f.readline().strip()
+        return
         
     def runQuery(self, cur, high):
         self.cursor.execute('Delete from t_signal')
@@ -61,33 +68,7 @@ class myDB():
         
         self.cursor.execute('Insert into t_signal (cur, high) values ("' + cur + '", "'+ str(high) +'");')
         self.connect.commit()
-    def drop(self):
-        self.connect.close()
-        self.cursor.close()
 
-    def load_key(self, path):
-        with open(path, 'r') as f:
-        self.key = f.readline().strip()
-        self.secret = f.readline().strip()
-        return
-
-    def load_db(self, path):
-        with open(path, 'r') as f:
-        self.id = f.readline().strip()
-        self.pw = f.readline().strip()
-        return
-
-# In[325]:
-
-
-# db = myDB()
-
-# db.runQuery('xxxxxx',5)
-
-# db.cursor.execute('select * from t_signal')
-
-
-# In[ ]:
 
 
 
