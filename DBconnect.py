@@ -1,4 +1,11 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 import pymysql
+from sqlalchemy import create_engine
 
 class myDB():
     def __init__(self, sid = '', spw = ''):
@@ -8,6 +15,7 @@ class myDB():
         self.cdb = 'main'
         self.connect = None
         self.cursor = None
+        self.engine = None
         
     def dbconnect(self):
         self.connect = pymysql.connect(host = self.host,
@@ -16,7 +24,7 @@ class myDB():
                                 database = self.cdb,
                                 autocommit = True)        
         self.cursor = self.connect.cursor()
-    
+        self.engine = create_engine('mysql+pymysql://'+self.id+':'+self.pw+'@'+self.host+'/'+self.cdb).connect()
     def reconnect(self):
         try:
             self.connect.close()
@@ -31,12 +39,6 @@ class myDB():
     def drop(self):
         self.connect.close()
         self.cursor.close()
-        
-    def load_key(self, path):
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
-        return
 
     def load_db(self, path):
         with open(path, 'r') as f:
@@ -44,14 +46,12 @@ class myDB():
             self.pw = f.readline().strip()
         return
         
-    def runQuery(self, cur, high):
+    def runQuery(self, cur, high, sig):
         self.cursor.execute('Delete from t_signal')
         self.connect.commit()
         
-        self.cursor.execute('Insert into t_signal (cur, high) values ("' + cur + '", "'+ str(high) +'");')
+        self.cursor.execute('Insert into t_signal (cur, high, sig) values ("' + cur + '", "'+ str(high) +'", "'+str(sig)+'");')
         self.connect.commit()
-
-
 
 
 
